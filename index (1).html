@@ -224,7 +224,16 @@
     .restore-link { color: var(--purple); cursor: pointer; font-weight: 700; text-decoration: underline; }
 
     /* ─── CHAT DRAWER ─── */
-    #chat-drawer { display: none; position: fixed; inset: 0; z-index: 200; flex-direction: column; background: var(--bg); }
+    #chat-drawer { 
+      display: none; position: fixed; 
+      top: 115px; bottom: 20px; right: 20px; width: calc(50% - 40px); 
+      z-index: 100; flex-direction: column; 
+      background: var(--bg); 
+      box-shadow: 0 8px 40px rgba(107,63,160,.2); 
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+    }
     #chat-drawer.open { display: flex; }
     .chat-header {
       background: linear-gradient(135deg, var(--purple-dark), var(--purple));
@@ -501,6 +510,7 @@
       sessionId = data.sessionId;
       localStorage.setItem('yotzot_session_id', sessionId);
       localStorage.setItem('yotzot_school', selectedSchool);
+      localStorage.setItem('yotzot_userName', userName);
       openChatDrawer(selectedSchool);
       if (!initSent) { initSent = true; await sendToBot('__INIT__'); }
     } catch (e) { alert('שגיאה בהתחברות לשרת.'); }
@@ -544,7 +554,7 @@
     const typingId = showTyping();
     try {
       const body = message === '__INIT__'
-        ? { sessionId, message: 'שלום! מה תפקידך ואיך תוכל לעזור לי?' }
+        ? { sessionId, message: `שלום! אני מורה מבית הספר ${selectedSchool}. שמי ${document.getElementById('user-name-input')?.value?.trim() || localStorage.getItem('yotzot_userName') || 'המורה'}. בבקשה התחל את תהליך הבנייה איתי — אל תשאל אותי שוב מה בית הספר שלי או מה שמי. כן, אנא שאל אותי מיהם חברי הצוות שלי ומה תחום הדעת שהם בחרו.` }
         : { sessionId, message };
       const res = await fetch(`${BACKEND_URL}/api/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
